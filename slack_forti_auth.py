@@ -24,7 +24,7 @@ except Exception:
 
 # ossec.conf configuration structure
 #  <integration>
-#      <name>slack_forti_auth</name>
+#      <name>slack</name>
 #      <hook_url>https://hooks.slack.com/services/XXXXXXXXXXXXXX</hook_url>
 #      <alert_format>json</alert_format>
 #  </integration>
@@ -188,7 +188,7 @@ def generate_msg(alert: any, options: any) -> any:
     # Successful login (81626)
     elif rule_id == 81626:
         blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": "✅ FortiGate Login Successful", "emoji": True}},
+            {"type": "header", "text": {"type": "plain_text", "text": f"✅ FortiGate Login Successful({alert['data'].get('profile', 'N/A')})", "emoji": True}},
             {"type": "section", "fields": [
                 {"type": "mrkdwn", "text": f"*Message:*\n{alert['rule']['description']}"},
                 {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
@@ -210,7 +210,7 @@ def generate_msg(alert: any, options: any) -> any:
     # Logout (81616)
     elif rule_id == 81616:
         blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": "🚪 FortiGate Admin Logout", "emoji": True}},
+            {"type": "header", "text": {"type": "plain_text", "text": f"🚪 FortiGate {alert['data'].get('dstuser', 'N/A')} User Logout", "emoji": True}},
             {"type": "section", "fields": [
                 {"type": "mrkdwn", "text": f"*Message:*\n{alert['rule']['description']}"},
                 {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
