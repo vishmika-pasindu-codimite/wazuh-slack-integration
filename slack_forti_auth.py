@@ -154,7 +154,7 @@ def generate_msg(alert: any, options: any) -> any:
         blocks = [
             {"type": "header", "text": {"type": "plain_text", "text": "🚨 FortiGate Login Failed", "emoji": True}},
             {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data'].get('msg', alert['rule']['description'])}"},
+                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data'].get('msg', alert['data']['msg'])}"},
                 {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
             ]},
             {"type": "section", "fields": [
@@ -188,9 +188,9 @@ def generate_msg(alert: any, options: any) -> any:
     # Successful login (81626)
     elif rule_id == 81626:
         blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": f"✅ FortiGate Login Successful({alert['data'].get('profile', 'N/A')})", "emoji": True}},
+            {"type": "header", "text": {"type": "plain_text", "text": f"✅ FortiGate Login Successful ({alert['data'].get('profile', 'N/A')})", "emoji": True}},
             {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['rule']['description']}"},
+                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
                 {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
             ]},
             {"type": "section", "fields": [
@@ -212,7 +212,7 @@ def generate_msg(alert: any, options: any) -> any:
         blocks = [
             {"type": "header", "text": {"type": "plain_text", "text": f"🚪 FortiGate {alert['data'].get('dstuser', 'N/A')} User Logout", "emoji": True}},
             {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['rule']['description']}"},
+                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
                 {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
             ]},
             {"type": "section", "fields": [
