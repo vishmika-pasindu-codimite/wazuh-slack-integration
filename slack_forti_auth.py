@@ -228,6 +228,90 @@ def generate_msg(alert: any, options: any) -> any:
                 {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
             ]}
         ]
+    # Configuration Change (81612)
+    elif rule_id == 81612:
+            blocks = [
+                {"type": "header", "text": {"type": "plain_text", "text": ":gear: FortiGate Firewall Configuration Change", "emoji": True}},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
+                    {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Path:*\n{alert['data'].get('cfgpath', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Change:*\n{alert['data'].get('cfgattr', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Done By:*\n{alert['data'].get('dstuser', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Interface:*\n{alert['data'].get('ui', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
+                ]}
+    # System Event (2501)
+    elif rule_id == 2501:
+        blocks = [
+            {"type": "header", "text": {"type": "plain_text", "text": "⚠️ FortiGate System Event", "emoji": True}},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Message:*\n{alert['rule']['description']}"},
+                {"type": "mrkdwn", "text": f"*Fired Times:*\n{alert['rule'].get('firedtimes', 'N/A')}"}
+            ]},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"},
+                {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
+            ]}
+        ]
+    # Virus Detected & Blocked (81620)
+    elif rule_id == 81620:
+         blocks = [
+                {"type": "header", "text": {"type": "plain_text", "text": ":microbe: Security Event: Virus Detected & Blocked", "emoji": True}},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
+                    {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Source IP:*\n{alert['data'].get('srcip', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Destination IP:*\n{alert['data'].get('dstip', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Service:*\n{alert['data'].get('service', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Virus Type:*\n{alert['data'].get('virus', 'N/A')}"}
+                ]},
+                {"type": "section", "fields": [
+                    {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
+                    {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
+                ]}
+            ]
+    # VPN Event (81622)        
+    elif rule_id == 81622:
+        blocks = [
+            {"type": "header", "text": {"type": "plain_text", "text": "🔒 FortiGate VPN Event", "emoji": True}},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
+                {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
+            ]},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Time:*\n{alert['data'].get('time', 'N/A')}"},
+                {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
+            ]},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Remote IP:*\n{alert['data'].get('remip', 'N/A')}"},
+                {"type": "mrkdwn", "text": f"*Tunnel ID:*\n{alert['data'].get('tunnelid', 'N/A')}"}
+                
+            ]},
+            {"type": "section", "fields": [
+                {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
+                {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
+            ]}
+        ]
 
     msg = {"blocks": blocks}
     return json.dumps(msg)
