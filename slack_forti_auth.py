@@ -252,6 +252,7 @@ def generate_msg(alert: any, options: any) -> any:
                     {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
                     {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
                 ]}
+            ]
     # System Event (2501)
     elif rule_id == 2501:
         blocks = [
