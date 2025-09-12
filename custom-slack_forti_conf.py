@@ -28,7 +28,7 @@ except Exception:
 #      <name>custom-slack_forti_auth</name>
 #      <hook_url>https://hooks.slack.com/services/XXXXXX_CHANGE_YOUR_WEBHOOK_URL_HERE_XXXXXXXX</hook_url>
 #      <alert_format>json</alert_format>
-#      <rule_id>81606,81616,81626</rule_id><!-- FailedLogin, Logout, Login -->
+#      <rule_id>81612</rule_id><!-- ConfigChange -->
 #  </integration>
 
 # Global vars
@@ -135,101 +135,31 @@ def generate_msg(alert: any, options: any) -> any:
     """Generate a Block Kit JSON message for Slack"""
 
     rule_id = int(alert['rule']['id'])
-    blocks = []
 
-    # --- extract GeoLocation fields from full_log if present ---
-    full_log = alert.get("full_log", "")
-    geo_city = re.search(r'GeoLocation_city="([^"]+)"', full_log)
-    geo_region = re.search(r'GeoLocation_region="([^"]+)"', full_log)
-    geo_country = re.search(r'GeoLocation_country="([^"]+)"', full_log)
-    geo_lat = re.search(r'GeoLocation_lat=([\d\.\-]+)', full_log)
-    geo_lon = re.search(r'GeoLocation_lon=([\d\.\-]+)', full_log)
+    blocks = [
+        {"type": "header", "text": {"type": "plain_text", "text": ":gear: FortiGate Firewall Configuration Change", "emoji": True}},
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
+            {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
+        ]},
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
+            {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
+        ]},
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"*Path:*\n{alert['data'].get('cfgpath', 'N/A')}"},
+            {"type": "mrkdwn", "text": f"*Change:*\n{alert['data'].get('cfgattr', 'N/A')}"}
+        ]},
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"*Done By:*\n{alert['data'].get('dstuser', 'N/A')}"},
+            {"type": "mrkdwn", "text": f"*Interface:*\n{alert['data'].get('ui', 'N/A')}"}
+        ]},
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
+            {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
+        ]}
+    ]
 
-    geo_city = geo_city.group(1) if geo_city else None
-    geo_region = geo_region.group(1) if geo_region else None
-    geo_country = geo_country.group(1) if geo_country else None
-    geo_lat = geo_lat.group(1) if geo_lat else None
-    geo_lon = geo_lon.group(1) if geo_lon else None
-
-    # Failed login (81606)
-    if rule_id == 81606:
-        blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": "🚨 FortiGate Login Failed", "emoji": True}},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data'].get('msg', alert['data']['msg'])}"},
-                {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Source IP:*\n{alert['data'].get('srcip', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Destination IP:*\n{alert['data'].get('dstip', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
-            ]}
-        ]
-
-        # add Geo info if available
-        geo_fields = []
-        if geo_city:
-            geo_fields.append({"type": "mrkdwn", "text": f"*City:*\n{geo_city}"})
-        if geo_region:
-            geo_fields.append({"type": "mrkdwn", "text": f"*Region:*\n{geo_region}"})
-        if geo_country:
-            geo_fields.append({"type": "mrkdwn", "text": f"*Country:*\n{geo_country}"})
-        if geo_lat and geo_lon:
-            geo_fields.append({"type": "mrkdwn", "text": f"*Coordinates:*\n{geo_lat}, {geo_lon}"})
-
-        if geo_fields:
-            blocks.append({"type": "section", "fields": geo_fields})
-
-    # Successful login (81626)
-    elif rule_id == 81626:
-        blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": f"✅ FortiGate Login Successful ({alert['data'].get('profile', 'N/A')})", "emoji": True}},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
-                {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Source IP:*\n{alert['data'].get('srcip', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Destination IP:*\n{alert['data'].get('dstip', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
-            ]}
-        ]
-
-    # Logout (81616)
-    elif rule_id == 81616:
-        blocks = [
-            {"type": "header", "text": {"type": "plain_text", "text": f"🚪 FortiGate {alert['data'].get('dstuser', 'N/A')} User Logout", "emoji": True}},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Message:*\n{alert['data']['msg']}"},
-                {"type": "mrkdwn", "text": f"*Device ID:*\n{alert['data'].get('devid', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log Time:*\n{alert['data'].get('time', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Timestamp:*\n{alert.get('timestamp', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*User:*\n{alert['data'].get('dstuser', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Interface:*\n{alert['data'].get('ui', 'N/A')}"}
-            ]},
-            {"type": "section", "fields": [
-                {"type": "mrkdwn", "text": f"*Log ID:*\n{alert['data'].get('logid', 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Rule ID from Wazuh:*\n{alert['rule']['id']}"}
-            ]}
-        ]
     msg = {"blocks": blocks}
     return json.dumps(msg)
 
