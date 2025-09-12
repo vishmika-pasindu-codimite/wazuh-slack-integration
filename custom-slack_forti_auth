@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set the virtual environment Python binary
-CUSTOM_PYTHON="/var/ossec/venv/bin/python3"
+CUSTOM_PYTHON="/usr/bin/python3"
 
 SCRIPT_PATH_NAME="$0"
 DIR_NAME="$(cd "$(dirname "${SCRIPT_PATH_NAME}")"; pwd -P)"
