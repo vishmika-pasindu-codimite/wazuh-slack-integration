@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright (C) 2025, Pasindu-Vishmika-Codimite.
 #
 # This program is free software; you can redistribute it
