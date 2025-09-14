@@ -2,16 +2,12 @@
 # Copyright (C) 2025, Pasindu-Vishmika-Codimite.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-WPYTHON_BIN="framework/python/bin/python3"
+CUSTOM_PYTHON="/var/ossec/framework/python/bin/python3"
 
 SCRIPT_PATH_NAME="$0"
 DIR_NAME="$(cd "$(dirname "${SCRIPT_PATH_NAME}")"; pwd -P)"
 SCRIPT_NAME="$(basename "${SCRIPT_PATH_NAME}")"
 PYTHON_SCRIPT="${DIR_NAME}/${SCRIPT_NAME}.py"
 
-# If WAZUH_PATH is not already defined, set it
-if [ -z "${WAZUH_PATH}" ]; then
-    WAZUH_PATH="$(cd ${DIR_NAME}/..; pwd)"
-fi
-
-${WAZUH_PATH}/${WPYTHON_BIN} "${PYTHON_SCRIPT}" "$@"
+# Run the integration script using custom Python interpreter
+${CUSTOM_PYTHON} "${PYTHON_SCRIPT}" "$@"
